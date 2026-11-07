@@ -20,25 +20,47 @@ Solves the **N-Queens problem** (place N queens on an N×N board so that no two 
 - **Random value order:** row values are shuffled, so repeated runs explore different parts of the search space.
 - **Measurements:** each solver counts its constraint checks, and a time limit of 20 minutes stops very long runs.
 
-## Usage
+## How to run
 
 Requires Python 3, no extra packages.
 
-```python
-from nqueens import NQueensCSP
-import time
-
-solver = NQueensCSP(20)
-
-start = time.time()
-solution = solver.solve_mac()          # or solve_bt() / solve_fc()
-elapsed = time.time() - start
-
-print(solution)                        # {column: row, ...}
-print("constraint checks:", solver.constraint_checks)
-print(f"time: {elapsed:.3f} s")
+```bash
+python main.py
 ```
+
+`main.py` runs all three algorithms on boards of size **4, 8, 16, 32 and 64**. For each run it prints the time, the number of constraint checks and the solution, draws the board when N ≤ 32, and ends with a summary table. Plain backtracking is skipped for N ≥ 20 because it would take too long.
+
+Example board (N = 4):
+
+```
+ □  ♕  □  □
+ □  □  □  ♕
+ ♕  □  □  □
+ □  □  ♕  □
+```
+
+## Sample results
+
+From one sample run of `main.py`. Times and checks change from run to run because the row order is random.
+
+| N | BT checks | FC checks | MAC checks | FC time | MAC time |
+|---|---|---|---|---|---|
+| 8 | 453 | 28 | 658 | 0.0001 s | 0.0005 s |
+| 16 | 147 | 139 | 4,154 | 0.0007 s | 0.0028 s |
+| 32 | skipped | 931 | 33,735 | 0.010 s | 0.036 s |
+| 64 | skipped | 2,016 | 250,535 | 0.025 s | 0.521 s |
+
+- **FC with MRV** was the fastest and solved N = 64 in a fraction of a second.
+- **MAC** prunes the most, but AC-3 checks every pair of remaining columns after each move, so it makes many more constraint checks.
+- **Plain BT** is fine for small boards but grows too slowly to use on large ones.
+
+## Files
+
+| File | Contents |
+|---|---|
+| [`nqueens.py`](nqueens.py) | the `NQueensCSP` class: BT, FC, MAC, AC-3 and MRV |
+| [`main.py`](main.py) | runs the experiments, prints boards and the summary table |
 
 ## Team
 
-Team project, built with a classmate.mbined performance-summary table for the evaluated algorithms and board sizes.
+Team project, built with a classmate.
