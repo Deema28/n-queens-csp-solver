@@ -1,58 +1,44 @@
 # N-Queens CSP Solver
 
-A Python implementation of the N-Queens problem as a Constraint Satisfaction Problem (CSP). The project compares three search algorithms and evaluates their performance using execution time and constraint-check counts across multiple board sizes.
+Solves the **N-Queens problem** (place N queens on an N×N board so that no two attack each other) as a **constraint satisfaction problem (CSP)**, and compares three search algorithms by running time and number of constraint checks. Built for a university Artificial Intelligence course at Imam Mohammad Ibn Saud Islamic University.
 
-## Implemented Algorithms
+## How the problem is modeled
 
-- **Backtracking (BT)** — assigns queens column by column while checking row and diagonal constraints.
-- **Forward Checking (FC)** — removes conflicting values from future domains and uses the Minimum Remaining Values (MRV) heuristic.
-- **Maintaining Arc Consistency (MAC)** — applies AC-3 constraint propagation during search and uses MRV.
+- **Variables:** one per column (`0 … N-1`)
+- **Domains:** the rows a queen in that column can take
+- **Constraints:** no two queens share a row, and no two queens share a diagonal (`|row₁ − row₂| ≠ |col₁ − col₂|`)
 
-The value order is randomized before each search, so execution times and constraint-check counts may vary between runs.
+## Algorithms
 
-## Tested Board Sizes
+| Algorithm | Method | Variable order |
+|---|---|---|
+| **Backtracking (BT)** | `solve_bt()` checks each new queen against those already placed | static, column by column |
+| **Forward Checking (FC)** | `solve_fc()` removes conflicting rows from future columns after every placement and backtracks as soon as a domain becomes empty | **MRV** heuristic |
+| **Maintaining Arc Consistency (MAC)** | `solve_mac()` runs **AC-3** after every placement to keep all remaining columns arc-consistent | **MRV** heuristic |
 
-The main program evaluates:
+- **MRV (Minimum Remaining Values):** picks the column with the fewest valid rows left, with deterministic tie-breaking.
+- **Random value order:** row values are shuffled, so repeated runs explore different parts of the search space.
+- **Measurements:** each solver counts its constraint checks, and a time limit of 20 minutes stops very long runs.
 
-```text
-N = 4, 8, 16, 32, 64
+## Usage
+
+Requires Python 3, no extra packages.
+
+```python
+from nqueens import NQueensCSP
+import time
+
+solver = NQueensCSP(20)
+
+start = time.time()
+solution = solver.solve_mac()          # or solve_bt() / solve_fc()
+elapsed = time.time() - start
+
+print(solution)                        # {column: row, ...}
+print("constraint checks:", solver.constraint_checks)
+print(f"time: {elapsed:.3f} s")
 ```
 
-To keep larger comparisons computationally practical, standard Backtracking is executed for board sizes below 20, while Forward Checking and MAC are evaluated across all configured sizes. Board visualizations are displayed for board sizes up to 32.
+## Team
 
-## Project Files
-
-- `nqueens.py` — defines the `NQueensCSP` class and implements Backtracking, Forward Checking, MRV, MAC, and AC-3.
-- `main.py` — runs the algorithms, measures execution time and constraint checks, displays solutions, and generates a final performance summary.
-
-## Requirements
-
-- Python 3
-- No external packages are required.
-
-## How to Run
-
-Clone the repository and enter its directory:
-
-```bash
-git clone https://github.com/r26th/n-queens-csp-solver.git
-cd n-queens-csp-solver
-```
-
-Run the program:
-
-```bash
-python main.py
-```
-
-## Output
-
-For each algorithm and board size, the program reports:
-
-- Whether a solution was found
-- Execution time in seconds
-- Number of recorded constraint checks
-- Solution configuration
-- Board visualization for supported sizes
-
-The program concludes with a combined performance-summary table for the evaluated algorithms and board sizes.
+Team project, built with a classmate.mbined performance-summary table for the evaluated algorithms and board sizes.
