@@ -11,7 +11,7 @@ class NQueensCSP:
         self.domains = {i: list(range(n)) for i in range(n)}
 
     # ==========================================
-    # MRV HEURISTIC (With Random Tie-Breaking)
+    # MRV HEURISTIC (Deterministic Tie-Breaking)
     # ==========================================
     def select_unassigned_variable(self, assignment, domains):
         """
@@ -208,4 +208,3 @@ class NQueensCSP:
             del assignment[var]
         
         return None
-
